@@ -1,4 +1,4 @@
-package com.july.test;
+package com.july.test.impl;
 
 import com.july.rpc.api.HelloObject;
 import com.july.rpc.api.HelloService;
@@ -14,6 +14,6 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public String hello(HelloObject object) {
         log.info("接收到：{}", object.getMessage());
-        return "这里调用的返回值， id = " + object.getId();
+        return "Hello, 这里调用的返回值， id = " + object.getId();
     }
 }
