@@ -3,6 +3,7 @@ package com.july.rpc.transport.netty.server;
 import com.july.rpc.codec.CommonDecoder;
 import com.july.rpc.codec.CommonEncoder;
 import com.july.rpc.registry.ServiceRegistry;
+import com.july.rpc.serializer.CommonSerializer;
 import com.july.rpc.serializer.JsonSerializer;
 import com.july.rpc.transport.RpcServer;
 import com.july.rpc.transport.netty.handler.NettyServerHandler;
@@ -24,8 +25,16 @@ public class NettyServer implements RpcServer {
 
     private final ServiceRegistry registry;
 
+    private final int SERIALIZER_CODE;
+
     public NettyServer(ServiceRegistry registry) {
         this.registry = registry;
+        this.SERIALIZER_CODE = 0;
+    }
+
+    public NettyServer(ServiceRegistry registry, int code) {
+        this.registry = registry;
+        this.SERIALIZER_CODE = code;
     }
 
     @Override
@@ -42,7 +51,7 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
-                                    new CommonEncoder(new JsonSerializer()),
+                                    new CommonEncoder(CommonSerializer.getByCode(SERIALIZER_CODE)),
                                     new CommonDecoder(),
                                     new NettyServerHandler(registry)
                             );

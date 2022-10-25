@@ -15,6 +15,7 @@ public enum SerializerCode {
     /**
      * 序列化器对应编码
      */
+    KRYO(0),
     JSON(1);
 
     private final int code;

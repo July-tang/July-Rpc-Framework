@@ -4,6 +4,7 @@ import com.july.rpc.codec.CommonDecoder;
 import com.july.rpc.codec.CommonEncoder;
 import com.july.rpc.entity.RpcRequest;
 import com.july.rpc.entity.RpcResponse;
+import com.july.rpc.serializer.CommonSerializer;
 import com.july.rpc.serializer.JsonSerializer;
 import com.july.rpc.transport.RpcClient;
 import com.july.rpc.transport.netty.handler.NettyClientHandler;
@@ -27,9 +28,17 @@ public class NettyClient implements RpcClient {
 
     private static final Bootstrap bootstrap;
 
+    private static int SERIALIZER_CODE = 0;
+
     public NettyClient(String host, int port) {
         this.host = host;
         this.port = port;
+    }
+
+    public NettyClient(String host, int port, int code) {
+        this.host = host;
+        this.port = port;
+        SERIALIZER_CODE = code;
     }
 
     static {
@@ -43,7 +52,7 @@ public class NettyClient implements RpcClient {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 new CommonDecoder(),
-                                new CommonEncoder(new JsonSerializer()),
+                                new CommonEncoder(CommonSerializer.getByCode(SERIALIZER_CODE)),
                                 new NettyClientHandler());
                     }
                 });
