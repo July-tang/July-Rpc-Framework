@@ -3,6 +3,7 @@ package com.july.rpc.entity;
 import com.july.rpc.enumeration.ResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RpcResponse<T> implements Serializable {
     /**
      * 响应状态码

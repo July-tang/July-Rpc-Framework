@@ -4,8 +4,8 @@ import com.july.rpc.enumeration.RpcError;
 import com.july.rpc.exception.RpcException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 注册服务的默认实现
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class DefaultServiceRegistry implements ServiceRegistry{
 
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> serviceMap = new HashMap<>();
 
     @Override
     public <T> void register(T service) {

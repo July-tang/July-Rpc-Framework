@@ -17,9 +17,8 @@ import java.lang.reflect.Proxy;
 @AllArgsConstructor
 @Slf4j
 public class RpcClientProxy implements InvocationHandler {
-    private String host;
 
-    private int port;
+    private final RpcClient client;
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
@@ -36,7 +35,6 @@ public class RpcClientProxy implements InvocationHandler {
                 .paramTypes(method.getParameterTypes())
                 .build();
 
-        RpcClient rpcClient = new RpcClient();
-        return ((RpcResponse) rpcClient.sendRequest(rpcRequest, host, port)).getData();
+        return client.sendRequest(rpcRequest);
     }
 }

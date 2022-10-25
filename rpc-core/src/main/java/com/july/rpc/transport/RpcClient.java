@@ -1,30 +1,18 @@
 package com.july.rpc.transport;
 
 import com.july.rpc.entity.RpcRequest;
-import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 /**
+ * 客户端类通用接口
+ *
  * @author july
  */
-@Slf4j
-public class RpcClient {
+public interface RpcClient {
 
-    public Object sendRequest(RpcRequest rpcRequest, String host, int port) {
-        try (Socket socket = new Socket(host, port)) {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            objectOutputStream.writeObject(rpcRequest);
-            objectOutputStream.flush();
-            return objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            log.error("调用时有错误发生：", e);
-            return null;
-        }
-    }
-
+    /**
+     * 发送RPC请求
+     * @param request RPC请求
+     * @return 请求结果
+     */
+    Object sendRequest(RpcRequest request);
 }
