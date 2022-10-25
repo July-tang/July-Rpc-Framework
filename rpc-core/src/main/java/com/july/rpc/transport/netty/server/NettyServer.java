@@ -2,11 +2,15 @@ package com.july.rpc.transport.netty.server;
 
 import com.july.rpc.codec.CommonDecoder;
 import com.july.rpc.codec.CommonEncoder;
+import com.july.rpc.provider.ServiceProvider;
+import com.july.rpc.provider.ServiceProviderImpl;
+import com.july.rpc.registry.NacosServiceRegistry;
 import com.july.rpc.registry.ServiceRegistry;
 import com.july.rpc.serializer.CommonSerializer;
-import com.july.rpc.serializer.JsonSerializer;
+import com.july.rpc.transport.AbstractRpcServer;
 import com.july.rpc.transport.RpcServer;
 import com.july.rpc.transport.netty.handler.NettyServerHandler;
+import com.july.rpc.util.ShutdownHook;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -17,28 +21,31 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+
 /**
  * @author july
  */
 @Slf4j
-public class NettyServer implements RpcServer {
+public class NettyServer extends AbstractRpcServer {
 
-    private final ServiceRegistry registry;
+    private final CommonSerializer serializer;
 
-    private final int SERIALIZER_CODE;
-
-    public NettyServer(ServiceRegistry registry) {
-        this.registry = registry;
-        this.SERIALIZER_CODE = 0;
+    public NettyServer(String host, int port) {
+        this(host, port, DEFAULT_SERIALIZER);
     }
 
-    public NettyServer(ServiceRegistry registry, int code) {
-        this.registry = registry;
-        this.SERIALIZER_CODE = code;
+    public NettyServer(String host, int port, int code) {
+        this.host = host;
+        this.port = port;
+        this.serializer = CommonSerializer.getByCode(code);
+        provider = new ServiceProviderImpl();
+        registry = new NacosServiceRegistry();
     }
 
     @Override
-    public void start(int port) {
+    public void start() {
+        ShutdownHook.addClearAllHook();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -51,13 +58,13 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
-                                    new CommonEncoder(CommonSerializer.getByCode(SERIALIZER_CODE)),
+                                    new CommonEncoder(serializer),
                                     new CommonDecoder(),
-                                    new NettyServerHandler(registry)
+                                    new NettyServerHandler()
                             );
                         }
                     })
-                    .bind(port);
+                    .bind(host, port);
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("启动服务器时发生错误： ", e);

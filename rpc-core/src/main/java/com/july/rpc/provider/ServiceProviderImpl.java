@@ -1,4 +1,4 @@
-package com.july.rpc.registry;
+package com.july.rpc.provider;
 
 import com.july.rpc.enumeration.RpcError;
 import com.july.rpc.exception.RpcException;
@@ -8,17 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 注册服务的默认实现
+ * 默认的服务提供方，保存服务端本地服务
  *
  * @author july
  */
 @Slf4j
-public class DefaultServiceRegistry implements ServiceRegistry{
+public class ServiceProviderImpl implements ServiceProvider {
 
-    private final Map<String, Object> serviceMap = new HashMap<>();
+    private static final Map<String, Object> serviceMap = new HashMap<>();
 
     @Override
-    public <T> void register(T service) {
+    public <T> void addServiceProvider(T service) {
         String serviceName = service.getClass().getCanonicalName();
         if (!serviceMap.containsKey(serviceName)) {
             Class<?>[] interfaces = service.getClass().getInterfaces();
@@ -34,7 +34,7 @@ public class DefaultServiceRegistry implements ServiceRegistry{
     }
 
     @Override
-    public Object getService(String serviceName) {
+    public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null) {
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);

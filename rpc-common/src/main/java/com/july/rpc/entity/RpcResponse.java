@@ -19,7 +19,7 @@ public class RpcResponse<T> implements Serializable {
     /**
      * 响应状态码
      */
-    private Integer status;
+    private Integer statusCode;
     /**
      * 响应状态信息
      */

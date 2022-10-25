@@ -3,13 +3,21 @@ package com.july.rpc.transport.socket.server;
 import com.july.rpc.entity.RpcRequest;
 import com.july.rpc.entity.RpcResponse;
 import com.july.rpc.handler.RequestHandler;
+import com.july.rpc.provider.ServiceProvider;
+import com.july.rpc.provider.ServiceProviderImpl;
+import com.july.rpc.registry.NacosServiceRegistry;
 import com.july.rpc.registry.ServiceRegistry;
+import com.july.rpc.serializer.CommonSerializer;
+import com.july.rpc.transport.AbstractRpcServer;
 import com.july.rpc.transport.RpcServer;
+import com.july.rpc.transport.socket.util.ObjectReader;
+import com.july.rpc.transport.socket.util.ObjectWriter;
+import com.july.rpc.util.ShutdownHook;
+import com.july.rpc.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
@@ -18,30 +26,34 @@ import java.util.concurrent.*;
  * @author july
  */
 @Slf4j
-public class SocketServer implements RpcServer {
-    private static final int CORE_POOL_SIZE = 5;
-    private static final int MAXIMUM_POOL_SIZE = 50;
-    private static final int KEEP_ALIVE_TIME = 60;
-    private static final int BLOCKING_QUEUE_CAPACITY = 100;
+public class SocketServer extends AbstractRpcServer {
+
     private final ExecutorService threadPool;
+    private final RequestHandler requestHandler = new RequestHandler();
+    private CommonSerializer serializer;
 
-    private final RequestHandler requestHandler;
+    public SocketServer(String host, int port) {
+        this(host, port, DEFAULT_SERIALIZER);
+    }
 
-    public SocketServer(ServiceRegistry registry) {
-        requestHandler = new RequestHandler(registry);
-        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-        ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, workingQueue, threadFactory);
+    public SocketServer(String host, int port, int code) {
+        this.host = host;
+        this.port = port;
+        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
+        registry = new NacosServiceRegistry();
+        provider = new ServiceProviderImpl();
+        serializer = CommonSerializer.getByCode(code);
     }
 
     @Override
-    public void start(int port) {
+    public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             log.info("服务器正在启动...");
+            ShutdownHook.addClearAllHook();
             Socket socket;
             while((socket = serverSocket.accept()) != null) {
                 log.info("客户端连接！{}:{}" ,socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new SocketServer.RequestHandlerThread(socket, requestHandler));
+                threadPool.execute(new RequestHandlerThread(socket));
             }
             threadPool.shutdown();
         } catch (IOException e) {
@@ -49,25 +61,23 @@ public class SocketServer implements RpcServer {
         }
     }
 
-    static class RequestHandlerThread implements Runnable {
+
+    class RequestHandlerThread implements Runnable {
         private final Socket socket;
 
-        private final RequestHandler requestHandler;
-
-        public RequestHandlerThread(Socket socket, RequestHandler requestHandler) {
+        public RequestHandlerThread(Socket socket) {
             this.socket = socket;
-            this.requestHandler = requestHandler;
         }
 
         @Override
         public void run() {
-            try (ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream())) {
-                RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
+            try (InputStream inputStream = socket.getInputStream();
+                 OutputStream outputStream = socket.getOutputStream()) {
+                RpcRequest rpcRequest = (RpcRequest) ObjectReader.readObject(inputStream);
                 Object result = requestHandler.handle(rpcRequest);
-                objectOutputStream.writeObject(RpcResponse.success(result));
-                objectOutputStream.flush();
-            } catch (Exception e) {
+                RpcResponse<Object> response = RpcResponse.success(result);
+                ObjectWriter.writeObject(outputStream, response, serializer);
+            } catch (IOException e) {
                 log.error("调用或发送时有错误发生：", e);
             }
         }

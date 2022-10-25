@@ -1,5 +1,7 @@
 package com.july.rpc.registry;
 
+import java.net.InetSocketAddress;
+
 /**
  * 服务注册接口
  *
@@ -8,18 +10,10 @@ package com.july.rpc.registry;
 public interface ServiceRegistry {
 
     /**
-     * 注册一个服务
+     * 注册服务
      *
-     * @param service
-     * @param <T>
+     * @param serviceName 服务名称
+     * @param inetSocketAddress 提供服务的地址
      */
-    <T> void register(T service);
-
-    /**
-     * 获取服务
-     *
-     * @param serviceName
-     * @return
-     */
-    Object getService(String serviceName);
+    void register(String serviceName, InetSocketAddress inetSocketAddress);
 }

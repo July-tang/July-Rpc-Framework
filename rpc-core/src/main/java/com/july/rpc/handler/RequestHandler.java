@@ -3,7 +3,8 @@ package com.july.rpc.handler;
 import com.july.rpc.entity.RpcRequest;
 import com.july.rpc.entity.RpcResponse;
 import com.july.rpc.enumeration.ResponseCode;
-import com.july.rpc.registry.ServiceRegistry;
+import com.july.rpc.provider.ServiceProvider;
+import com.july.rpc.provider.ServiceProviderImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -16,14 +17,14 @@ import java.lang.reflect.Method;
 @Slf4j
 public class RequestHandler {
 
-    private final ServiceRegistry registry;
+    private static final ServiceProvider provider;
 
-    public RequestHandler(ServiceRegistry registry) {
-        this.registry = registry;
+    static {
+        provider = new ServiceProviderImpl();
     }
 
     public Object handle(RpcRequest rpcRequest) {
-        Object service = registry.getService(rpcRequest.getInterfaceName());
+        Object service = provider.getServiceProvider(rpcRequest.getInterfaceName());
         try {
             return invokeTargetMethod(rpcRequest, service);
         } catch (Exception e) {
