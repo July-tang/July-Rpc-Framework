@@ -10,6 +10,7 @@ import com.july.rpc.serializer.CommonSerializer;
 import com.july.rpc.transport.AbstractRpcServer;
 import com.july.rpc.transport.RpcServer;
 import com.july.rpc.transport.netty.handler.NettyServerHandler;
+import com.july.rpc.util.ShutdownHook;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -44,6 +45,7 @@ public class NettyServer extends AbstractRpcServer {
 
     @Override
     public void start() {
+        ShutdownHook.addClearAllHook();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {

@@ -12,6 +12,7 @@ import com.july.rpc.transport.AbstractRpcServer;
 import com.july.rpc.transport.RpcServer;
 import com.july.rpc.transport.socket.util.ObjectReader;
 import com.july.rpc.transport.socket.util.ObjectWriter;
+import com.july.rpc.util.ShutdownHook;
 import com.july.rpc.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +49,7 @@ public class SocketServer extends AbstractRpcServer {
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             log.info("服务器正在启动...");
+            ShutdownHook.addClearAllHook();
             Socket socket;
             while((socket = serverSocket.accept()) != null) {
                 log.info("客户端连接！{}:{}" ,socket.getInetAddress(), socket.getPort());
