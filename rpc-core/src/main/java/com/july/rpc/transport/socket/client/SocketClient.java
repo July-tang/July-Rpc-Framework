@@ -5,6 +5,8 @@ import com.july.rpc.entity.RpcResponse;
 import com.july.rpc.enumeration.ResponseCode;
 import com.july.rpc.enumeration.RpcError;
 import com.july.rpc.exception.RpcException;
+import com.july.rpc.loadbalancer.LoadBalancer;
+import com.july.rpc.loadbalancer.RoundRobinLoadBalancer;
 import com.july.rpc.registry.NacosServiceDiscovery;
 import com.july.rpc.registry.ServiceDiscovery;
 import com.july.rpc.serializer.CommonSerializer;
@@ -30,11 +32,19 @@ public class SocketClient implements RpcClient {
     private CommonSerializer serializer;
 
     public SocketClient() {
-        this(DEFAULT_SERIALIZER);
+        this(DEFAULT_SERIALIZER, new RoundRobinLoadBalancer());
     }
 
     public SocketClient(int code) {
-        this.discovery = new NacosServiceDiscovery();
+        this(code, new RoundRobinLoadBalancer());
+    }
+
+    public SocketClient(LoadBalancer loadBalancer) {
+        this(DEFAULT_SERIALIZER, loadBalancer);
+    }
+
+    public SocketClient(int code, LoadBalancer loadBalancer) {
+        this.discovery = new NacosServiceDiscovery(loadBalancer);
         serializer = CommonSerializer.getByCode(code);
     }
 

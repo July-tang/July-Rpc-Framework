@@ -15,16 +15,17 @@ public class TestNettyClient {
 
     @Test
     public void helloClient() {
-        RpcClient client = new NettyClient("127.0.0.1", 9000);
+        RpcClient client = new NettyClient();
         RpcClientProxy proxy = new RpcClientProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(777, "This is a message");
+        System.out.println(helloService.hello(object));
         System.out.println(helloService.hello(object));
     }
 
     @Test
     public void byeClient() {
-        RpcClient client = new NettyClient("127.0.0.1", 9000);
+        RpcClient client = new NettyClient();
         RpcClientProxy proxy = new RpcClientProxy(client);
         ByeService byeService = proxy.getProxy(ByeService.class);
         System.out.println(byeService.bye("777"));

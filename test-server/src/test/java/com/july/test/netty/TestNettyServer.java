@@ -17,7 +17,7 @@ public class TestNettyServer {
     public void server() {
         HelloService helloService = new HelloServiceImpl();
         ByeService byeService = new ByeServiceImpl();
-        RpcServer server = new NettyServer("127.0.0.1", 9000);
+        RpcServer server = new NettyServer("127.0.0.1", 9001);
         server.publishService(helloService, HelloService.class);
         server.publishService(byeService, ByeService.class);
         server.start();
