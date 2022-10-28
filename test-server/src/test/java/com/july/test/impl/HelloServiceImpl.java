@@ -1,5 +1,6 @@
 package com.july.test.impl;
 
+import com.july.rpc.annotation.Service;
 import com.july.rpc.api.HelloObject;
 import com.july.rpc.api.HelloService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author july
  */
 @Slf4j
+@Service
 public class HelloServiceImpl implements HelloService {
 
     @Override

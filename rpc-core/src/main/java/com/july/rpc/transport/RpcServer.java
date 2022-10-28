@@ -21,8 +21,15 @@ public interface RpcServer {
      * 发布服务
      *
      * @param service 服务实例
-     * @param serviceClass
+     * @param serviceName 服务名
      * @param <T>
      */
-    <T> void publishService(Object service, Class<T> serviceClass);
+    <T> void publishService(Object service, String serviceName);
+
+    /**
+     * 扫描服务
+     *
+     * @param clazz
+     */
+    void scanServices(Class<?> clazz);
 }

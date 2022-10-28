@@ -1,5 +1,6 @@
 package com.july.test.socket;
 
+import com.july.rpc.annotation.ServiceScan;
 import com.july.rpc.api.ByeService;
 import com.july.rpc.api.HelloService;
 import com.july.rpc.provider.ServiceProviderImpl;
@@ -13,15 +14,12 @@ import org.junit.Test;
 /**
  * @author july
  */
+@ServiceScan
 public class TestSocketServer {
 
     @Test
     public void server() {
-        HelloService helloService = new HelloServiceImpl();
-        ByeService byeService = new ByeServiceImpl();
         RpcServer rpcServer = new SocketServer("127.0.0.1", 9999);
-        rpcServer.publishService(helloService, HelloService.class);
-        rpcServer.publishService(byeService, ByeService.class);
         rpcServer.start();
     }
 }

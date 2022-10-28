@@ -18,8 +18,7 @@ public class ServiceProviderImpl implements ServiceProvider {
     private static final Map<String, Object> serviceMap = new HashMap<>();
 
     @Override
-    public <T> void addServiceProvider(T service) {
-        String serviceName = service.getClass().getCanonicalName();
+    public <T> void addServiceProvider(T service, String serviceName) {
         if (!serviceMap.containsKey(serviceName)) {
             Class<?>[] interfaces = service.getClass().getInterfaces();
             if (interfaces.length == 0) {
@@ -28,7 +27,6 @@ public class ServiceProviderImpl implements ServiceProvider {
             for (Class<?> i : interfaces) {
                 serviceMap.put(i.getCanonicalName(), service);
             }
-            serviceMap.put(serviceName, interfaces);
             log.info("向接口：{} 注册服务：{}", interfaces, serviceName);
         }
     }

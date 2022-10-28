@@ -13,7 +13,7 @@ import lombok.Getter;
 public enum RpcError {
 
     /**
-     * 可能出现的Rpc调用错误
+     * Rpc过程调用错误
      */
     SERVICE_NOT_IMPLEMENT_ANY_INTERFACE("注册的服务未实现任何接口"),
     SERVICE_NOT_FOUND("找不到相对应的服务"),
@@ -30,7 +30,13 @@ public enum RpcError {
      */
     FAILED_TO_CONNECT_SERVICE_REGISTRY("连接服务注册中心失败"),
     REGISTER_SERVICE_FAILED("注册服务失败"),
-    GET_SERVICE_FAILED("获取服务失败");
+    GET_SERVICE_FAILED("获取服务失败"),
+
+    /**
+     * Rpc启动类错误
+     */
+    SERVICE_SCAN_PACKAGE_NOT_FOUND("启动类ServiceScan注解缺失"),
+    UNKNOWN_ERROR("出现未知错误");
 
     private final String message;
 
