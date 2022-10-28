@@ -9,7 +9,7 @@ import java.io.OutputStream;
 
 /**
  *
- * @author ziyang
+ * @author july
  */
 public class ObjectWriter {
 

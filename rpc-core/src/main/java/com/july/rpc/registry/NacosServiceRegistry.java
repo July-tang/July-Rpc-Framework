@@ -16,7 +16,7 @@ import java.net.InetSocketAddress;
  * @author july
  */
 @Slf4j
-public class NacosServiceRegistry implements ServiceRegistry{
+public class NacosServiceRegistry implements ServiceRegistry {
 
     @Override
     public void register(String serviceName, InetSocketAddress inetSocketAddress) {

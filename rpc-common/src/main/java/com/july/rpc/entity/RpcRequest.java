@@ -30,7 +30,7 @@ public class RpcRequest implements Serializable {
      */
     private Object[] parameters;
     /**
-     * 待调用方法的类型
+     * 待调用方法的参数类型
      */
     private Class<?>[] paramTypes;
 }

@@ -48,7 +48,7 @@ public class NettyClient implements RpcClient {
         try {
             InetSocketAddress inetSocketAddress = discovery.lookupService(request.getInterfaceName());
             Channel channel = NettyClientUtils.getChannel(inetSocketAddress, serializer);
-            if(channel != null && channel.isActive()) {
+            if (channel != null && channel.isActive()) {
                 channel.writeAndFlush(request).addListener(future1 -> {
                     if (future1.isSuccess()) {
                         log.info(String.format("客户端发送消息: %s", request));

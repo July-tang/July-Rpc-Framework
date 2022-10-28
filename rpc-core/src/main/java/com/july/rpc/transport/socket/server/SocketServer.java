@@ -51,8 +51,8 @@ public class SocketServer extends AbstractRpcServer {
             log.info("服务器正在启动...");
             ShutdownHook.addClearAllHook();
             Socket socket;
-            while((socket = serverSocket.accept()) != null) {
-                log.info("客户端连接！{}:{}" ,socket.getInetAddress(), socket.getPort());
+            while ((socket = serverSocket.accept()) != null) {
+                log.info("客户端连接！{}:{}", socket.getInetAddress(), socket.getPort());
                 threadPool.execute(new RequestHandlerThread(socket));
             }
             threadPool.shutdown();

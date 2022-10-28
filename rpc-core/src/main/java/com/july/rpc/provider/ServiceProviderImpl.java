@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 默认的服务提供方，保存服务端本地服务
@@ -15,7 +16,7 @@ import java.util.Map;
 @Slf4j
 public class ServiceProviderImpl implements ServiceProvider {
 
-    private static final Map<String, Object> serviceMap = new HashMap<>();
+    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
 
     @Override
     public <T> void addServiceProvider(T service, String serviceName) {

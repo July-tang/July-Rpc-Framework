@@ -3,7 +3,6 @@ package com.july.rpc.transport.netty.handler;
 import com.july.rpc.entity.RpcRequest;
 import com.july.rpc.entity.RpcResponse;
 import com.july.rpc.handler.RequestHandler;
-import com.july.rpc.provider.ServiceProvider;
 import com.july.rpc.util.ThreadPoolFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

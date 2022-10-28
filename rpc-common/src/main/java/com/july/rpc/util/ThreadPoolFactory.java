@@ -32,7 +32,9 @@ public class ThreadPoolFactory {
     }
 
     private static ExecutorService createDefaultThreadPool(String threadNamePrefix, boolean daemon) {
+        //如果没有该线程池则创建
         ExecutorService pool = threadPollsMap.computeIfAbsent(threadNamePrefix, k -> createThreadPool(threadNamePrefix, daemon));
+        //如果已有的线程池已关闭则重新创建
         if (pool.isShutdown() || pool.isTerminated()) {
             threadPollsMap.remove(threadNamePrefix);
             pool = createThreadPool(threadNamePrefix, daemon);
@@ -45,7 +47,8 @@ public class ThreadPoolFactory {
         // 使用有界队列
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
         ThreadFactory threadFactory = createThreadFactory(threadNamePrefix, daemon);
-        return new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE_SIZE, KEEP_ALIVE_TIME, TimeUnit.MINUTES, workQueue, threadFactory);
+        ThreadPoolExecutor.AbortPolicy abortPolicy = new ThreadPoolExecutor.AbortPolicy();
+        return new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE_SIZE, KEEP_ALIVE_TIME, TimeUnit.MINUTES, workQueue, threadFactory, abortPolicy);
     }
 
 
